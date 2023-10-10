@@ -16,7 +16,7 @@ jobs:
       run: docker-compose build
       
     - name: Start the containers
-      run: docker-compose up --detach --wait --wait-timeout 30
+      run: docker-compose up
       
     - name: Set up Python
       uses: actions/setup-python@v4
