@@ -16,7 +16,7 @@ jobs:
       run: docker-compose build
       
     - name: Start the containers
-      run: docker-compose up
+      run: docker-compose up -d
       
     - name: Set up Python
       uses: actions/setup-python@v4
