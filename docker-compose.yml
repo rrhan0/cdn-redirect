@@ -1,0 +1,11 @@
+version: '3'
+services:
+  cdn-redirect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cdn-redirect
+    container_name: cdn-redirect
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
