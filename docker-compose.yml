@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cdn-redirect
+    image: rrhan0/cdn-redirect:latest
     container_name: cdn-redirect
     restart: unless-stopped
     ports:

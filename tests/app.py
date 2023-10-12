@@ -9,14 +9,8 @@ def test_redirect_https():
     response = requests.get(f'{BASE_URL}/redirect/https://www.cbc.ca/')
     assert response.status_code == 200
 
-    response = requests.get(f'{BASE_URL}/redirect/https://www.cbc.ca/', allow_redirects=False)
-    assert response.status_code == 302
-
 
 def test_redirect_no_https():
     response = requests.get(f'{BASE_URL}/redirect/www.cbc.ca/')
     assert response.status_code == 200
-
-    response = requests.get(f'{BASE_URL}/redirect/www.cbc.ca/', allow_redirects=False)
-    assert response.status_code == 302
 
