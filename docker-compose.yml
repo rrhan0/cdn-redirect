@@ -16,6 +16,7 @@ services:
 
   mongodb:
     image: mongo:latest
+    container_name: mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
