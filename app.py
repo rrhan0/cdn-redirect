@@ -1,14 +1,22 @@
 from datetime import datetime
-# from pymongo import MongoClient
-import subprocess
-import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
 from flask import Flask, jsonify, Response
+import subprocess
+import gridfs
+import os
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 app = Flask(__name__)
 
-# db_client = MongoClient("localhost", 27017)
+load_dotenv()
+db_client = MongoClient(host=os.environ.get("DB_HOST", "localhost"),
+                        port=int(os.environ.get("DB_PORT", 27017)),
+                        username=os.environ.get("DB_USER"),
+                        password=os.environ.get("DB_PASSWORD"))
+db = db_client.pages
+fs = gridfs.GridFS(db)
 
 
 @app.route('/redirect/<path:url>', methods=['GET'])
@@ -17,11 +25,15 @@ def redirect_wrapper(url):
         url = f'https://{url}'
     command = f'webpage2html -q {url}'
 
+    if fs.exists(url):
+        file = fs.get(url).read().decode('utf-8')
+        return Response(file, content_type='text/html')
+
     try:
         output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True, shell=True)
+        fs.put(output.encode('utf-8'), _id=url)
         return Response(output, content_type='text/html')
     except subprocess.CalledProcessError as e:
-        print(e)
         return {'msg': 'failed'}, 500
 
 
