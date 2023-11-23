@@ -7,6 +7,7 @@ RUN apk add --no-cache bash \
 WORKDIR /app
 
 COPY requirements.txt .
+COPY .env .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
