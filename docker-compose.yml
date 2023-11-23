@@ -1,6 +1,8 @@
 version: '3'
 services:
   cdn-redirect:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,3 +11,18 @@ services:
     restart: unless-stopped
     ports:
       - '8080:8080'
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
