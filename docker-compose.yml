@@ -1,13 +1,11 @@
 version: '3'
 services:
-  cdn-redirect:
-    env_file:
-      - .env
+  my-archive:
     build:
       context: .
       dockerfile: Dockerfile
-    image: rrhan0/cdn-redirect:latest
-    container_name: cdn-redirect
+    image: rrhan0/my-archive:latest
+    container_name: my-archive
     restart: unless-stopped
     ports:
       - '8080:8080'
@@ -17,11 +15,8 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '${DB_PORT}:${DB_PORT}'
+      - '27017:27017'
     volumes:
       - mongodb_data_container:/data/db
 
