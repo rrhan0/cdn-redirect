@@ -32,7 +32,7 @@ def create_snapshot(url):
     return generate_snapshot(timestamp, url, fs)
 
 
-@app.route('/archive/<path:url>/<int:timestamp>', methods=['POST'])
+@app.route('/archive/<path:url>/<int:timestamp>', methods=['GET'])
 def get_snapshot(url, timestamp):
     return get_page(timestamp, url, fs)
 
