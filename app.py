@@ -1,54 +1,60 @@
-from datetime import datetime
-from dotenv import load_dotenv
+from datetime import datetime, timezone
 from pymongo import MongoClient
-from flask import Flask, jsonify, Response
-import subprocess
+from flask import Flask
 import gridfs
 import os
 
-VERSION = "1.0.1"
+from lib.controller import generate_snapshot, get_snapshot_url, get_page
+
+start_time = datetime.now()
 
 app = Flask(__name__)
 
-load_dotenv()
+# db_client = MongoClient(host=os.environ.get("DB_HOST", "localhost"),
+#                         port=int(os.environ.get("DB_PORT", 27017)),
+#                         username=os.environ.get("DB_USER", None),
+#                         password=os.environ.get("DB_PASSWORD", None))
 db_client = MongoClient(host=os.environ.get("DB_HOST", "localhost"),
-                        port=int(os.environ.get("DB_PORT", 27017)),
-                        username=os.environ.get("DB_USER"),
-                        password=os.environ.get("DB_PASSWORD"))
+                        port=int(os.environ.get("DB_PORT", 27017)))
 db = db_client.pages
 fs = gridfs.GridFS(db)
 
 
-@app.route('/redirect/<path:url>', methods=['GET'])
-def redirect_wrapper(url):
-    if not (url.startswith('http://') or url.startswith('https://')):
-        url = f'https://{url}'
-    command = f'webpage2html -q {url}'
-
-    if fs.exists(url):
-        file = fs.get(url).read().decode('utf-8')
-        return Response(file, content_type='text/html')
-
-    try:
-        output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True, shell=True)
-        fs.put(output.encode('utf-8'), _id=url)
-        return Response(output, content_type='text/html')
-    except subprocess.CalledProcessError as e:
-        return {'msg': 'failed'}, 500
+@app.route('/archive/<path:url>', methods=['GET'])
+def list_snapshots(url):
+    return get_snapshot_url(url, fs)
 
 
-@app.route("/healthcheck", methods=["GET"])
-def healthcheck_endpoint():
-    data = {
-        "msg": f"Running version {VERSION}",
-        "date": f"{datetime.utcnow().isoformat()[0:19]}Z",
+@app.route('/archive/<path:url>', methods=['POST'])
+def create_snapshot(url):
+    time_now = datetime.now(timezone.utc)
+    timestamp = int(time_now.strftime("%Y%m%d%H%M%S"))
+    return generate_snapshot(timestamp, url, fs)
+
+
+@app.route('/archive/<path:url>/<int:timestamp>', methods=['POST'])
+def get_snapshot(url, timestamp):
+    return get_page(timestamp, url, fs)
+
+
+@app.route("/status", methods=["GET"])
+def status():
+    end_time = datetime.now()
+    duration = end_time - start_time
+
+    days = duration.days
+    seconds = duration.seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+
+    body = {
+        "uptime": f"{days} days, {hours} hours, {minutes} minutes, {seconds}, seconds",
+        "date": f"{datetime.utcnow().isoformat()}"
     }
-    return jsonify(data)
 
-
-def main():
-    app.run(debug=True, host='0.0.0.0', port=8080, threaded=True)
+    return body
 
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True, host='0.0.0.0', port=8080, threaded=True)

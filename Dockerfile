@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.11-alpine
 
 RUN apk add --no-cache bash \
                        curl \
@@ -7,7 +7,6 @@ RUN apk add --no-cache bash \
 WORKDIR /app
 
 COPY requirements.txt .
-COPY .env .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 

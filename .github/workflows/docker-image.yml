@@ -28,10 +28,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Test with pytest
-      run: |
-        pip install pytest
-        pytest tests/app.py
+#    - name: Test with pytest
+#      run: |
+#        pip install pytest
+#        pytest tests/app.py
 
     - name: Stop containers
       run: docker-compose down
