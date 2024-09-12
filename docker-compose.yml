@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     ports:
       - '8080:8080'
-      - '27017:27017'
     depends_on:
       - mongodb
 

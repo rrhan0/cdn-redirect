@@ -14,7 +14,7 @@ app = Flask(__name__)
 #                         port=int(os.environ.get("DB_PORT", 27017)),
 #                         username=os.environ.get("DB_USER", None),
 #                         password=os.environ.get("DB_PASSWORD", None))
-db_client = MongoClient(host=os.environ.get("DB_HOST", "localhost"),
+db_client = MongoClient(host=os.environ.get("DB_HOST", "mongodb"),
                         port=int(os.environ.get("DB_PORT", 27017)))
 db = db_client.pages
 fs = gridfs.GridFS(db)
@@ -57,4 +57,4 @@ def status():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1', port=8080, threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=8080, threaded=True)
