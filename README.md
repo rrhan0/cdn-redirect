@@ -7,13 +7,13 @@ A Flask-based web application for archiving and retrieving snapshots of web page
 - **GET `/status`**  
   Returns the uptime and current date of the server.
 
-- **GET `/archive/<path:url>`**  
+- **GET `/archive/{url}`**  
   Lists all snapshots for the specified URL.
 
-- **POST `/archive/<path:url>`**  
+- **POST `/archive/{url}`**  
   Creates a new snapshot for the specified URL and stores it in the database.
 
-- **POST `/archive/<path:url>/<int:timestamp>`**  
+- **GET `/archive/{url}/{timestamp}`**  
   Retrieves the HTML content of a specific snapshot identified by the URL and timestamp.
 
 ## Acknowledgements
